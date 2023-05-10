@@ -32,26 +32,26 @@ onValue(starCountRef, (snapshot) => {
 
 //add button event
 const button1 = document.getElementById("buttonLED1");
-let toggle1 = true;
+let toggle1;
 onValue(ref(db, "/led1"), (snapshot) => {
     const data = snapshot.val();
     console.log(data);
-    button1.innerText = toggle1 ? "LED1: on" : "LED1: off";
+    toggle1 = data;
+    //set button text
+    button1.innerText = data ? "LED1: on" : "LED1: off";
+    if (toggle1) { //toggle rgb value for button
+        button1.style.backgroundColor = "rgb(0,150,20)";
+    } else {
+        button1.style.backgroundColor = "rgb(150,0,20)";
+    }
 });
 button1.addEventListener("click", function () {
     console.log("clicked Button1");
-    if (toggle1) {
-        this.style.backgroundColor = "rgb(0,150,20)";
-    } else {
-        this.style.backgroundColor = "rgb(150,0,20)";
-    }
-
+    //change variable 
+    toggle1 = !toggle1;
     // Set the value to the database
     update(ref(db), {
         "led1": toggle1
     });
-
-    //change variable 
-    toggle1 = !toggle1;
 });
 
