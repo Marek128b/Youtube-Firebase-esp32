@@ -9,23 +9,27 @@
 #include <addons/RTDBHelper.h>
 
 /* 1. Define the WiFi credentials */
-#define WIFI_SSID "SSID"
-#define WIFI_PASSWORD "PASSWORD"
+#define WIFI_SSID "ZTE_8EU23F"      // SSID
+#define WIFI_PASSWORD "6mM5mJYY726" // PASSWORD
 
 // For the following credentials, see examples/Authentications/SignInAsUser/EmailPassword/EmailPassword.ino
 
 /* 2. Define the API Key */
-#define API_KEY "API-KEY"
+#define API_KEY "AIzaSyCFGIi20VOO_krrHcP06PwChzrvF-g1knw" // API-KEY
 
 /* 3. Define the RTDB URL */
-#define DATABASE_URL "Firebase-URL" //<databaseName>.firebaseio.com or <databaseName>.<region>.firebasedatabase.app
+#define DATABASE_URL "https://test-35c8b-default-rtdb.europe-west1.firebasedatabase.app/" //<databaseName>.firebaseio.com or <databaseName>.<region>.firebasedatabase.app //Firebase-URL
 
 /* 4. Define the user Email and password that alreadey registerd or added in your project */
-#define USER_EMAIL "Firebase-Email"
-#define USER_PASSWORD "Firebase-Password"
+#define USER_EMAIL "test.123@gmail.com" // Firebase-Email
+#define USER_PASSWORD "123456"          // Firebase-Password
+
+#define LED_PIN 13
+#define POT_PIN 33
+int prevValue = 0; // variable to store the previous potentiometer value
 
 // Define Firebase Data object
-FirebaseData fbdo;
+FirebaseData fbdo, fbdo_s1;
 
 FirebaseAuth auth;
 FirebaseConfig config;
@@ -33,11 +37,12 @@ String uid;
 
 unsigned long sendDataPrevMillis = 0;
 
-unsigned long count = 0;
-
 void setup()
 {
   Serial.begin(115200);
+
+  pinMode(LED_PIN, OUTPUT);
+  pinMode(POT_PIN, INPUT);
 
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   Serial.print("Connecting to Wi-Fi");
@@ -75,6 +80,12 @@ void setup()
   // Comment or pass false value when WiFi reconnection will control by your code or third party library
   Firebase.reconnectWiFi(true);
 
+  // begin Stream
+  if (!Firebase.RTDB.beginStream(&fbdo_s1, "/led1"))
+  {
+    Serial.printf("Stram 1 error begin: %s\r\n", fbdo_s1.errorReason().c_str());
+  }
+
   // Getting the user UID might take a few seconds
   Serial.println("Getting User UID");
   while ((auth.token.uid) == "")
@@ -95,15 +106,18 @@ void loop()
 
   // Firebase.ready() should be called repeatedly to handle authentication tasks.
 
-  if (Firebase.ready() && (millis() - sendDataPrevMillis >= 5000))
+  if (Firebase.ready() && Firebase.RTDB.getBool(&fbdo, "/led1")) //using polling database
   {
-    sendDataPrevMillis = millis();
-
-    Serial.println("\n---------------------------------------------------\n");
-
-    Serial.printf("Set int... %s\n", Firebase.RTDB.setInt(&fbdo, "/pot1", count) ? "ok" : fbdo.errorReason().c_str());
-
-    Serial.printf("Get boolean... %s\n", Firebase.RTDB.getBool(&fbdo, "/led1") ? fbdo.to<const char *>() : fbdo.errorReason().c_str());
-    count += 5;
+    digitalWrite(LED_PIN, fbdo.boolData());
   }
+
+  int potValue = analogRead(POT_PIN); // read the potentiometer value
+  if (Firebase.ready() && potValue != prevValue)
+  {
+    Serial.println(potValue);
+    Serial.printf("Set int... %s\n", Firebase.RTDB.setInt(&fbdo, "/pot1", potValue) ? "ok" : fbdo.errorReason().c_str());
+    prevValue = potValue; // store the new value as the previous value
+    delay(100);
+  }
+  delay(20);
 }
