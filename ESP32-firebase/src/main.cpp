@@ -9,16 +9,16 @@
 #include <addons/RTDBHelper.h>
 
 /* 1. Define the WiFi credentials */
-#define WIFI_SSID "ZTE_8EU23F"      // SSID
-#define WIFI_PASSWORD "6mM5mJYY726" // PASSWORD
+#define WIFI_SSID "WIFI_SSID"      // SSID
+#define WIFI_PASSWORD "WIFI_PASSWORD" // PASSWORD
 
 // For the following credentials, see examples/Authentications/SignInAsUser/EmailPassword/EmailPassword.ino
 
 /* 2. Define the API Key */
-#define API_KEY "AIzaSyCFGIi20VOO_krrHcP06PwChzrvF-g1knw" // API-KEY
+#define API_KEY "API_KEY" // API-KEY
 
 /* 3. Define the RTDB URL */
-#define DATABASE_URL "https://test-35c8b-default-rtdb.europe-west1.firebasedatabase.app/" //<databaseName>.firebaseio.com or <databaseName>.<region>.firebasedatabase.app //Firebase-URL
+#define DATABASE_URL "DATABASE_URL" //<databaseName>.firebaseio.com or <databaseName>.<region>.firebasedatabase.app //Firebase-URL
 
 /* 4. Define the user Email and password that alreadey registerd or added in your project */
 #define USER_EMAIL "test.123@gmail.com" // Firebase-Email
